@@ -29,12 +29,24 @@ while initialMoney:
 DAYS_TO_SIMULATE = 30
 
 print('INITIAL MONEY', initialMoney)
+print('INITIAL SEASON', season.SEASON)
 
 for i in range(DAYS_TO_SIMULATE):
+  season.currentSeason()
+
   for crop in full_crop:
+    if  (season.SEASON not in crop.seasons):
+      full_crop.remove(crop)
+      break
+
     crop.grow()
     if (crop.is_ready):
       initialMoney += crop.harvest()
-      full_crop.remove(crop)
+
+      try:
+        crop.regrowth_time
+      except:
+        full_crop.remove(crop)
 
 print('FINAL MONEY', initialMoney)
+print('FINAL SEASON', season.SEASON)

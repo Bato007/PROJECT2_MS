@@ -1,4 +1,29 @@
 from random import choices
+from math import ceil
+
+FERTILIZER_TYPES = [
+  {
+    'name': 'fertilizer_basic',
+    'cost': 100,
+    'quality_prob': [0.88, 0.8, 0.4, 0]
+  },
+  {
+    'name': 'fertilizer_quality',
+    'cost': 150,
+    'quality_prob': [0.78, 0.14, 0.8, 0]
+  },
+  {
+    'name': 'speed_basic',
+    'cost': 100,
+    'growth_reduction': 0.10
+  },
+  {
+    'name': 'speed',
+    'cost': 150,
+    'growth_reduction': 0.25
+  },
+] 
+QUALITY_PROBABILITIES = [0.95, 0.5, 0, 0]
 
 class Crop(object):
   def __init__(self, name, growth_time, cost, profits, seasons=0):
@@ -7,10 +32,18 @@ class Crop(object):
     self.cost = cost
     self.profits = profits
     self.seasons = seasons
+    self.quality_prob = QUALITY_PROBABILITIES[:]
 
-    self.quality_prob = [0.50, 0.25, 0.15, 0.10]
     self.is_ready = False
     self.lived_time = 0
+
+  # Apply the fertilizer to the crop
+  def useFertilizer(self, index):
+    fertilizer = FERTILIZER_TYPES[index]
+    if ('speed' in fertilizer['name']):
+      self.growth_time -= ceil(self.growth_time * fertilizer['growth_reduction'])
+    else:
+      self.quality_prob = fertilizer['quality_prob']
 
   # Make the plant grow
   def grow(self):
@@ -23,18 +56,25 @@ class Crop(object):
   def harvest(self):
     return choices(self.profits, weights=self.quality_prob)[0]
 
-x = Crop(
-  'Blue Jazz',
-  7,
-  30,
-  [50, 62, 75, 100],
-)
-print(x.harvest())
-
 class ReGrowthCrop(Crop):
   def __init__(self, name, growth_time, cost, profits, regrowth_time, seasons=0):
     super().__init__(name, growth_time, cost, profits, seasons)
     self.regrowth_time = regrowth_time
+
+  # Make the plant grow
+  def grow(self):
+    if (self.lived_time == self.growth_time):
+      self.is_ready = True
+    elif (self.lived_time > self.growth_time):
+      real_time = self.lived_time - self.growth_time
+      if (real_time % self.regrowth_time == 0):
+        self.is_ready = True
+    self.lived_time += 1
+
+    # Get profit by selling the plant
+  def harvest(self):
+    self.is_ready = False
+    return choices(self.profits, weights=self.quality_prob)[0]
 
 # === SPRING CROPS ===
 class BlueJazz(Crop):

@@ -26,7 +26,7 @@ FERTILIZER_TYPES = [
 QUALITY_PROBABILITIES = [0.95, 0.5, 0, 0]
 
 class Crop(object):
-  def __init__(self, name, growth_time, cost, profits, seasons=0):
+  def __init__(self, name, growth_time, cost, profits, seasons=[]):
     self.name = name
     self.growth_time = growth_time # Excludes day of planted
     self.cost = cost
@@ -57,7 +57,7 @@ class Crop(object):
     return choices(self.profits, weights=self.quality_prob)[0]
 
 class ReGrowthCrop(Crop):
-  def __init__(self, name, growth_time, cost, profits, regrowth_time, seasons=0):
+  def __init__(self, name, growth_time, cost, profits, regrowth_time, seasons=[]):
     super().__init__(name, growth_time, cost, profits, seasons)
     self.regrowth_time = regrowth_time
 
@@ -86,6 +86,7 @@ class BlueJazz(Crop):
       7,
       30,
       [50, 62, 75, 100],
+      seasons=['SPRING']
     )
 
 class Cauliflower(Crop):
@@ -94,7 +95,8 @@ class Cauliflower(Crop):
       'Cauliflower',
       12,
       80,
-      [175, 218, 262, 350]
+      [175, 218, 262, 350],
+      seasons=['SPRING']
     )
 
 class CoffeeBean(ReGrowthCrop):
@@ -105,7 +107,7 @@ class CoffeeBean(ReGrowthCrop):
       2500,
       [15, 18, 22, 30],
       2,
-      1
+      seasons=['SPRING', 'SUMMER']
     )
 
 class Garlic(Crop):
@@ -114,7 +116,8 @@ class Garlic(Crop):
       'Garlic',
       4,
       40,
-      [60, 75, 90, 120]
+      [60, 75, 90, 120],
+      seasons=['SPRING']
     )
 
 class GreenBean(ReGrowthCrop):
@@ -124,7 +127,8 @@ class GreenBean(ReGrowthCrop):
       10,
       60,
       [40, 50, 60, 80],
-      3
+      3,
+      seasons=['SPRING']
     )
 
 class Kale(Crop):
@@ -133,7 +137,8 @@ class Kale(Crop):
       'Kale',
       6,
       70,
-      [110, 137, 165, 220]
+      [110, 137, 165, 220],
+      seasons=['SPRING']
     )
 
 class Parsnip(Crop):
@@ -142,7 +147,8 @@ class Parsnip(Crop):
       'Parsnip',
       4,
       20,
-      [35, 43, 52, 70]
+      [35, 43, 52, 70],
+      seasons=['SPRING']
     )
 
 class Potato(Crop):
@@ -151,7 +157,8 @@ class Potato(Crop):
       'Potato',
       6,
       50,
-      [80, 100, 120, 160]
+      [80, 100, 120, 160],
+      seasons=['SPRING']
     )
 
 class Rhubarb(Crop):
@@ -160,7 +167,8 @@ class Rhubarb(Crop):
       'Rhubarb',
       13,
       100,
-      [220, 275, 330, 440]
+      [220, 275, 330, 440],
+      seasons=['SPRING']
     )
 
 class Strawberry(ReGrowthCrop):
@@ -170,7 +178,8 @@ class Strawberry(ReGrowthCrop):
       8,
       100,
       [120, 150, 180, 240],
-      4
+      4,
+      seasons=['SPRING']
     )
 
 class Tulip(Crop):
@@ -179,7 +188,8 @@ class Tulip(Crop):
       'Tulip',
       6,
       20,
-      [30, 37, 45, 60]
+      [30, 37, 45, 60],
+      seasons=['SPRING']
     )
 
 class UnmilledRice(Crop):
@@ -188,7 +198,8 @@ class UnmilledRice(Crop):
       'Unmilled Rice',
       8,
       40,
-      [30, 37, 45, 60]
+      [30, 37, 45, 60],
+      seasons=['SPRING']
     )
 
 # === SUMMER CROPS ===
@@ -199,7 +210,8 @@ class Blueberry(ReGrowthCrop):
       13,
       80,
       [50, 62, 75, 100],
-      4
+      4,
+      seasons=['SUMMER']
     )
 
 class Corn(ReGrowthCrop):
@@ -210,7 +222,8 @@ class Corn(ReGrowthCrop):
       150,
       [50, 62, 75, 100],
       4,
-      1
+      1,
+      seasons=['SUMMER', 'FALL']
     )
 
 class Hops(ReGrowthCrop):
@@ -220,7 +233,8 @@ class Hops(ReGrowthCrop):
       11,
       60,
       [25, 31, 37, 50],
-      1
+      1,
+      seasons=['SUMMER']
     )
 
 class HotPepper(ReGrowthCrop):
@@ -230,7 +244,8 @@ class HotPepper(ReGrowthCrop):
       5,
       40,
       [40, 50, 60, 80],
-      3
+      3,
+      seasons=['SUMMER']
     )
 
 class Melon(Crop):
@@ -239,7 +254,8 @@ class Melon(Crop):
       'Melon',
       12,
       80,
-      [250, 312, 375, 500]
+      [250, 312, 375, 500],
+      seasons=['SUMMER']
     )
 
 class Poppy(Crop):
@@ -248,7 +264,8 @@ class Poppy(Crop):
       'Poppy',
       7,
       100,
-      [140, 175, 210, 280]
+      [140, 175, 210, 280],
+      seasons=['SUMMER']
     )
 
 class Radish(Crop):
@@ -257,7 +274,8 @@ class Radish(Crop):
       'Radish',
       6,
       40,
-      [90, 112, 135, 180]
+      [90, 112, 135, 180],
+      seasons=['SUMMER']
     )
 
 class RedCabbage(Crop):
@@ -267,6 +285,7 @@ class RedCabbage(Crop):
       9,
       100,
       [260, 325, 390, 520],
+      seasons=['SUMMER']
     )
 
 class Starfruit(Crop):
@@ -276,6 +295,7 @@ class Starfruit(Crop):
       13,
       400,
       [750, 937, 1125, 1500],
+      seasons=['SUMMER']
     )
 
 class SummerSpangle(Crop):
@@ -285,6 +305,7 @@ class SummerSpangle(Crop):
       8,
       50,
       [90, 112, 135, 180],
+      seasons=['SUMMER']
     )
 
 class Tomato(ReGrowthCrop):
@@ -294,7 +315,8 @@ class Tomato(ReGrowthCrop):
       11,
       50,
       [60, 75, 90, 120],
-      4
+      4,
+      seasons=['SUMMER']
     )
 
 class Wheat(Crop):
@@ -304,7 +326,7 @@ class Wheat(Crop):
       4,
       10,
       [25, 31, 37, 50],
-      1
+      seasons=['SUMMER', 'FALL']
     )
 
 # === FALL CROPS ===
@@ -315,6 +337,7 @@ class Amaranth(Crop):
       7,
       70,
       [150, 187, 225, 300],
+      seasons=['FALL']
     )
 
 class Artichoke(Crop):
@@ -324,6 +347,7 @@ class Artichoke(Crop):
       8,
       30,
       [160, 200, 240, 320],
+      seasons=['FALL']
     )
 
 class Beet(Crop):
@@ -333,6 +357,7 @@ class Beet(Crop):
       6,
       20,
       [100, 125, 150, 200],
+      seasons=['FALL']
     )
 
 class BokChoy(Crop):
@@ -342,6 +367,7 @@ class BokChoy(Crop):
       4,
       50,
       [80, 100, 120, 160],
+      seasons=['FALL']
     )
 
 class Cranberries(ReGrowthCrop):
@@ -361,7 +387,8 @@ class Eggplant(ReGrowthCrop):
       5,
       20,
       [60, 75, 90, 120],
-      5
+      5,
+      seasons=['FALL']
     )
 
 class FairyRose(Crop):
@@ -370,7 +397,8 @@ class FairyRose(Crop):
       'Fairy Rose',
       12,
       200,
-      [290, 362, 435, 580]
+      [290, 362, 435, 580],
+      seasons=['FALL']
     )
 
 class Grape(ReGrowthCrop):
@@ -380,7 +408,8 @@ class Grape(ReGrowthCrop):
       10,
       60,
       [80, 100, 120, 160],
-      3
+      3,
+      seasons=['FALL']
     )
 
 class Pumpkin(Crop):
@@ -389,7 +418,8 @@ class Pumpkin(Crop):
       'Pumpkin',
       13,
       100,
-      [320, 400, 480, 640]
+      [320, 400, 480, 640],
+      seasons=['FALL']
     )
 
 class Yam(Crop):
@@ -398,7 +428,8 @@ class Yam(Crop):
       'Yam',
       10,
       60,
-      [160, 200, 240, 320]
+      [160, 200, 240, 320],
+      seasons=['FALL']
     )
 
 def getSpringCrops():

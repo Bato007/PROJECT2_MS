@@ -71,10 +71,12 @@ class ReGrowthCrop(Crop):
         self.is_ready = True
     self.lived_time += 1
 
-    # Get profit by selling the plant
+  # Get profit by selling the plant
   def harvest(self):
     self.is_ready = False
-    return choices(self.profits, weights=self.quality_prob)[0]
+    crop = choices(self.profits, weights=self.quality_prob)[0]
+    self.quality_prob = QUALITY_PROBABILITIES
+    return crop
 
 # === SPRING CROPS ===
 class BlueJazz(Crop):

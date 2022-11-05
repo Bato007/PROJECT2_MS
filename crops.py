@@ -5,12 +5,12 @@ FERTILIZER_TYPES = [
   {
     'name': 'fertilizer_basic',
     'cost': 100,
-    'quality_prob': [0.88, 0.8, 0.4, 0]
+    'quality_prob': [0.88, 0.08, 0.04, 0]
   },
   {
     'name': 'fertilizer_quality',
     'cost': 150,
-    'quality_prob': [0.78, 0.14, 0.8, 0]
+    'quality_prob': [0.78, 0.14, 0.08, 0]
   },
   {
     'name': 'speed_basic',
@@ -23,7 +23,7 @@ FERTILIZER_TYPES = [
     'growth_reduction': 0.25
   },
 ] 
-QUALITY_PROBABILITIES = [0.95, 0.5, 0, 0]
+QUALITY_PROBABILITIES = [0.95, 0.05, 0, 0]
 
 class Crop(object):
   def __init__(self, name, growth_time, cost, profits, seasons=[]):
@@ -104,7 +104,7 @@ class CoffeeBean(ReGrowthCrop):
     super().__init__(
       'Coffee Bean',
       10,
-      2500,
+      100,
       [15, 18, 22, 30],
       2,
       seasons=['SPRING', 'SUMMER']
@@ -222,7 +222,6 @@ class Corn(ReGrowthCrop):
       150,
       [50, 62, 75, 100],
       4,
-      1,
       seasons=['SUMMER', 'FALL']
     )
 

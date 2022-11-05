@@ -16,15 +16,15 @@ class Season(object):
         }
 
     def currentSeason(self):
-        if self.current_day == 86:
+        if self.current_day == 84:
             self.SEASON = SEASONS[0]
             self.current_day = 0
-            current_year += 1
+            self.current_year += 1
             self.generateSeasonCrops()
-        elif self.current_day == 57:
+        elif self.current_day == 56:
             self.SEASON = SEASONS[2]
             self.generateSeasonCrops()
-        elif self.current_day == 29:
+        elif self.current_day == 28:
             self.SEASON = SEASONS[1]
             self.generateSeasonCrops()
         elif self.current_day == 0:
@@ -41,3 +41,6 @@ class Season(object):
             self.available_crops = getSummerCrops()
         elif (self.SEASON == SEASONS[2]):
             self.available_crops = getFallCrops()
+
+    def daysLeft(self) -> int:
+        return ((SEASONS.index(self.SEASON) + 1) * 28) - self.current_day

@@ -1,5 +1,7 @@
 from math import floor, log
 from random import random, randint
+
+from matplotlib.style import available
 from seasons import *
 
 season = Season()
@@ -14,9 +16,10 @@ _rain_lambda = 1
 next_rain_day = getArrivalTime(random(), _rain_lambda)
 
 # Season initial crop
+print('DAY:', season.current_day + 1, ', YEAR:',  season.current_year + 1)
+print('INITIAL MONEY', wallet)
+print('INITIAL SEASON', season.SEASON)
 season.currentSeason()
-available_costs = [item().cost for item in season.available_crops]
-available_growths = [item().growth_time for item in season.available_crops]
 
 ## Function to buy crops
 def buyCrops(wallet, daysLeft):
@@ -41,17 +44,21 @@ def buyCrops(wallet, daysLeft):
         full_crop.append(randomCrop())
     
     # If there is no money, and no time to grow any seed, don't buy anything that day
-    if wallet < min(available_costs) or min(available_growths) > daysLeft:
+    if wallet < min(season.available_cost_growth)[0] or min(season.available_cost_growth)[1] > daysLeft:
+      return wallet
+    # If the lowest costing seed doesn't have time to grow (and hasn't been bought above)
+    filtered = list(filter(lambda tup: tup[0] == min(season.available_cost_growth)[0], season.available_cost_growth))
+    lowest = min(filtered, key=lambda tup: tup[1])
+    if lowest[0] > wallet and lowest[1] > daysLeft:
       return wallet
   return wallet
 
 # Start the first purchase with 28 days left in the season    
 wallet = buyCrops(wallet, 28)
+print('MONEY AFTER INITAL PURCHASE', wallet, '\n')
 
-DAYS_TO_SIMULATE = 70
+DAYS_TO_SIMULATE = 150
 
-print('INITIAL MONEY', wallet)
-print('INITIAL SEASON', season.SEASON)
 
 # Every day
 for i in range(DAYS_TO_SIMULATE):
@@ -78,6 +85,7 @@ for i in range(DAYS_TO_SIMULATE):
 
 # Once the simulation days end, let the rest of the crops grow
 while len(full_crop) > 0:
+  season.currentSeason()
   for crop in full_crop:
     if  (season.SEASON not in crop.seasons):
       full_crop.remove(crop)
@@ -88,5 +96,6 @@ while len(full_crop) > 0:
       wallet += crop.harvest()
       full_crop.remove(crop)
 
+print('DAY:', season.current_day + 1, ', YEAR:',  season.current_year + 1)
 print('FINAL MONEY', wallet)
 print('FINAL SEASON', season.SEASON)

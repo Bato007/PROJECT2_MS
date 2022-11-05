@@ -8,6 +8,8 @@ class Season(object):
 
         self.current_day = 0
         self.current_year = 0
+        self.available_costs = []
+        self.available_growths = []
 
     def getCurrentDate(self):
         return {
@@ -41,6 +43,7 @@ class Season(object):
             self.available_crops = getSummerCrops()
         elif (self.SEASON == SEASONS[2]):
             self.available_crops = getFallCrops()
+        self.available_cost_growth = [(item().cost, item().growth_time) for item in self.available_crops]
 
     def daysLeft(self) -> int:
         return ((SEASONS.index(self.SEASON) + 1) * 28) - self.current_day

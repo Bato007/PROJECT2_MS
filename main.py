@@ -1,6 +1,10 @@
 from math import floor, log
 from random import random, randint, sample
+import copy
 from seasons import *
+
+DAYS_TO_SIMULATE = 30
+INITIAL_WALLET = 500
 
 def getArrivalTime(p, _lambda):
   return - log(1 - p) / _lambda
@@ -10,11 +14,11 @@ _rain_lambda = 1
 next_rain_day = getArrivalTime(random(), _rain_lambda)
 
 class Candidate(object):
-  def __init__(self, wallet = 500, init_crops = [], available_crops = []) -> None:
+  def __init__(self, wallet = INITIAL_WALLET, init_crops = [], available_crops = []) -> None:
     self.mutate_crops = 2
     self.wallet = wallet
     self.full_crop = []
-    self.season = Season()
+    self.season = Season(DAYS_TO_SIMULATE)
 
     self.season.currentSeason()
     if ((init_crops is None) or (len(init_crops) == 0)):
@@ -22,40 +26,38 @@ class Candidate(object):
     else:
       self.buySameCrops(init_crops)
 
-    #! Can make bugs, ref to same objs?
-    self.init_crops = self.full_crop[:]
+    self.init_crops = copy.deepcopy(self.full_crop)
 
-  def buyCrops(self, daysLeft, available_crops = []):
-    seedCount = 0
-    store_crops = self.season.available_crops if ((available_crops is None) or (len(available_crops) == 0)) else available_crops
+  def buyCrops(self, daysLeft, available_crops = [], iterationCount=25):
+    store_crops = self.season.available_crops
     
-    ## Buying if there is money, and no more than 25 seeds
-    while self.wallet and seedCount < 25:
+    ## Buying if there is money, and no more than 15 seeds
+    for i in range(iterationCount):
+      buyFlag = random()
       # Generate a crop
       randomCrop = store_crops[randint(0, len(store_crops) - 1)]()
 
-      try:
-        # If it's a regrowth crop, only buy it if it will generate an income during CURRENT season
-        n = floor(randomCrop.profits[0] / randomCrop.cost)
-        if (randomCrop.cost <= self.wallet and ((randomCrop.growth_time) + (n * randomCrop.regrowth_time)) <= daysLeft):
-          self.wallet -= randomCrop.cost
-          seedCount += 1
-          self.full_crop.append(randomCrop)
-      except:
-        # If it's a normal crop, only buy if it has a chance to grow before the CURRENT season ends
-        if (randomCrop.cost <= self.wallet and (randomCrop.growth_time) <= daysLeft):
-          self.wallet -= randomCrop.cost
-          seedCount += 1
-          self.full_crop.append(randomCrop)
-      
-      # If there is no money, and no time to grow any seed, don't buy anything that day
-      if self.wallet < min(self.season.available_cost_growth)[0] or min(self.season.available_cost_growth)[1] > daysLeft:
-        return
-      # If the lowest costing seed doesn't have time to grow (and hasn't been bought above)
-      filtered = list(filter(lambda tup: tup[0] == min(self.season.available_cost_growth)[0], self.season.available_cost_growth))
-      lowest = min(filtered, key=lambda tup: tup[1])
-      if lowest[0] > self.wallet and lowest[1] > daysLeft:
-        return
+      if ((self.wallet - randomCrop.cost) > 0 and buyFlag > 0.5):  
+        try:
+          # If it's a regrowth crop, only buy it if it will generate an income during CURRENT season
+          n = floor(randomCrop.profits[0] / randomCrop.cost)
+          if (randomCrop.cost <= self.wallet and ((randomCrop.growth_time) + (n * randomCrop.regrowth_time)) <= daysLeft):
+            self.wallet -= randomCrop.cost
+            self.full_crop.append(randomCrop)
+          else:
+            return
+        except:
+          if (randomCrop.cost <= self.wallet and (randomCrop.growth_time) <= daysLeft):
+            self.wallet -= randomCrop.cost
+            self.full_crop.append(randomCrop)
+          else:
+            return
+        
+        # If the lowest costing seed doesn't have time to grow (and hasn't been bought above)
+        filtered = list(filter(lambda tup: tup[0] == min(self.season.available_cost_growth)[0], self.season.available_cost_growth))
+        lowest = min(filtered, key=lambda tup: tup[1])
+        if lowest[0] > self.wallet and lowest[1] > daysLeft:
+          return
 
   def buySameCrops(self, init_crops):
     for crop in init_crops:
@@ -70,7 +72,7 @@ class Candidate(object):
       crop = self.full_crop.pop(randint(0, len(self.full_crop) - 1))
       self.wallet += crop.cost
 
-    self.buyCrops(self.season.daysLeft())
+    self.buyCrops(self.season.daysLeft(), iterationCount=2)
     self.init_crops = self.full_crop[:]
 
   def simulate(self, simulate_days):
@@ -78,7 +80,7 @@ class Candidate(object):
     for _ in range(simulate_days):
       for crop in self.full_crop:
         # Remove crop if it's out of season
-        if  (self.season.SEASON not in crop.seasons):
+        if (self.season.SEASON not in crop.seasons):
           self.full_crop.remove(crop)
           break
 
@@ -135,7 +137,7 @@ class Population(object):
     self.candidates.append(Candidate(available_crops=crops))
 
 class Simulation(object):
-  def simulate(self, pop_num=4, iterations=10, simulate_days=80, select=0.5, mutate=0.1):
+  def simulate(self, pop_num=4, iterations=10, simulate_days=DAYS_TO_SIMULATE, select=0.5, mutate=0.1):
     population = Population()
     population.generate(pop_num)
 
@@ -153,7 +155,6 @@ class Simulation(object):
 
       # Simulation for every candidate
       for j, candidate in enumerate(population.candidates):
-        print()
         candidate.simulate(simulate_days)
         print('# Candidate:', j, '- finish with:', candidate.wallet)
 

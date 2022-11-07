@@ -2,10 +2,11 @@ from crops import *
 SEASONS = ['SPRING', 'SUMMER', 'FALL']
 
 class Season(object):
-    def __init__(self):
+    def __init__(self, DAYS_TO_SIMULATE):
         self.SEASON = SEASONS[0]
         self.available_crops = []
 
+        self.DAYS_TO_SIMULATE = DAYS_TO_SIMULATE
         self.current_day = 0
         self.current_year = 0
         self.available_costs = []
@@ -46,4 +47,4 @@ class Season(object):
         self.available_cost_growth = [(item().cost, item().growth_time) for item in self.available_crops]
 
     def daysLeft(self) -> int:
-        return ((SEASONS.index(self.SEASON) + 1) * 28) - self.current_day
+        return self.DAYS_TO_SIMULATE - self.current_day

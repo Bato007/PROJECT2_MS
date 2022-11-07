@@ -37,6 +37,9 @@ class Crop(object):
     self.is_ready = False
     self.lived_time = 0
 
+  def __str__(self) -> str:
+    return self.name
+
   # Apply the fertilizer to the crop
   def useFertilizer(self, index):
     fertilizer = FERTILIZER_TYPES[index]

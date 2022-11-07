@@ -73,7 +73,7 @@ class Candidate(object):
       self.wallet += crop.cost
 
     self.buyCrops(self.season.daysLeft(), iterationCount=2)
-    self.init_crops = self.full_crop[:]
+    self.candidates = copy.deepcopy(self.full_crop)
 
   def simulate(self, simulate_days):
     # Every day
@@ -110,7 +110,7 @@ class Population(object):
     new_candidates = []
     for candidate in self.candidates:
       new_candidates.append(Candidate(init_crops=candidate.init_crops))
-    self.candidates = new_candidates[:]
+    self.candidates = copy.deepcopy(new_candidates)
 
   def sort(self):
     self.candidates = sorted(self.candidates, key=lambda x: x.wallet)

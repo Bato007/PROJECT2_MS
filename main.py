@@ -3,7 +3,7 @@ from random import random, randint, sample
 import copy
 from seasons import *
 
-DAYS_TO_SIMULATE = 30
+DAYS_TO_SIMULATE = 100
 INITIAL_WALLET = 500
 
 def getArrivalTime(p, _lambda):
@@ -33,21 +33,50 @@ class Candidate(object):
     
     ## Buying if there is money, and no more than 15 seeds
     for i in range(iterationCount):
-      buyFlag = random()
       # Generate a crop
+      buyFlag = random()
       randomCrop = store_crops[randint(0, len(store_crops) - 1)]()
+
 
       if ((self.wallet - randomCrop.cost) > 0 and buyFlag > 0.5):  
         try:
           # If it's a regrowth crop, only buy it if it will generate an income during CURRENT season
           n = floor(randomCrop.profits[0] / randomCrop.cost)
           if (randomCrop.cost <= self.wallet and ((randomCrop.growth_time) + (n * randomCrop.regrowth_time)) <= daysLeft):
+
+            try:
+              self.season.updateSeed(
+                randomCrop.name
+              )
+            except:
+              self.season.setInitialSeed(
+                randomCrop.name,
+                {
+                  "seedsBought": 1,
+                  "cost": randomCrop.cost,
+                }
+              )
+
             self.wallet -= randomCrop.cost
             self.full_crop.append(randomCrop)
           else:
             return
         except:
           if (randomCrop.cost <= self.wallet and (randomCrop.growth_time) <= daysLeft):
+
+            try:
+              self.season.updateSeed(
+                randomCrop.name
+              )
+            except:
+              self.season.setInitialSeed(
+                randomCrop.name,
+                {
+                  "seedsBought": 1,
+                  "cost": randomCrop.cost,
+                }
+              )
+
             self.wallet -= randomCrop.cost
             self.full_crop.append(randomCrop)
           else:
@@ -87,7 +116,11 @@ class Candidate(object):
         # Grow crop, and sell it if possible
         crop.grow()
         if (crop.is_ready):
-          self.wallet += crop.harvest()
+          moneyFromHarvest = crop.harvest()
+
+          self.season.updateProfits(crop.name, moneyFromHarvest)
+
+          self.wallet += moneyFromHarvest
 
           # Remove crop if it won't regrow
           try:

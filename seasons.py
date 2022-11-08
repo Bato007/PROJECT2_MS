@@ -3,14 +3,18 @@ import copy
 
 SEASONS = ['SPRING', 'SUMMER', 'FALL']
 class Season(object):
-    def __init__(self, DAYS_TO_SIMULATE):
+    def __init__(self, DAYS_TO_SIMULATE, favorite_crops):
         self.SEASON = SEASONS[0]
         self.available_crops = []
-        self.PROFITS_PER_SEASON = {
-            "SPRING": {},
-            "SUMMER": {},
-            "FALL": {},
-        }
+
+        if (len(favorite_crops) > 0):
+            self.PROFITS_PER_SEASON = favorite_crops
+        else:
+            self.PROFITS_PER_SEASON = {
+                "SPRING": {},
+                "SUMMER": {},
+                "FALL": {},
+            }
 
         self.DAYS_TO_SIMULATE = DAYS_TO_SIMULATE
         self.current_day = 0
@@ -71,7 +75,7 @@ class Season(object):
         self.available_cost_growth = [(item().cost, item().growth_time) for item in self.available_crops]
 
     def daysLeft(self) -> int:
-        return self.DAYS_TO_SIMULATE - self.current_day
+        return (self.DAYS_TO_SIMULATE - self.current_day) % 28
     
     def setInitialSeed(self, cropName, info):
         self.PROFITS_PER_SEASON[self.SEASON][cropName] = info
@@ -92,8 +96,10 @@ class Season(object):
             self.PROFITS_PER_SEASON[self.SEASON][cropName]['totalFromHarvest'] = total
 
         totalSpent = self.PROFITS_PER_SEASON[self.SEASON][cropName]['cost'] * self.PROFITS_PER_SEASON[self.SEASON][cropName]['seedsBought']
+
         totalReceived = self.PROFITS_PER_SEASON[self.SEASON][cropName]['totalFromHarvest']
-        self.PROFITS_PER_SEASON[self.SEASON][cropName]['finalProfits'] = totalReceived - totalSpent
+        total = totalReceived - totalSpent
+        self.PROFITS_PER_SEASON[self.SEASON][cropName]['finalProfits'] = total
 
     def getProfits(self):
         return self.PROFITS_PER_SEASON

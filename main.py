@@ -3,7 +3,7 @@ from random import random, randint, sample
 import copy
 from seasons import *
 
-DAYS_TO_SIMULATE = 100
+DAYS_TO_SIMULATE = 28
 INITIAL_WALLET = 500
 
 def getArrivalTime(p, _lambda):
@@ -14,11 +14,11 @@ _rain_lambda = 1
 next_rain_day = getArrivalTime(random(), _rain_lambda)
 
 class Candidate(object):
-  def __init__(self, wallet = INITIAL_WALLET, init_crops = [], available_crops = []) -> None:
+  def __init__(self, wallet = INITIAL_WALLET, init_crops = [], available_crops = [], favorite_crops=[]) -> None:
     self.mutate_crops = 2
     self.wallet = wallet
     self.full_crop = []
-    self.season = Season(DAYS_TO_SIMULATE)
+    self.season = Season(DAYS_TO_SIMULATE, favorite_crops=favorite_crops)
 
     self.season.currentSeason()
     if ((init_crops is None) or (len(init_crops) == 0)):
@@ -42,8 +42,8 @@ class Candidate(object):
         try:
           # If it's a regrowth crop, only buy it if it will generate an income during CURRENT season
           n = floor(randomCrop.profits[0] / randomCrop.cost)
-          if (randomCrop.cost <= self.wallet and ((randomCrop.growth_time) + (n * randomCrop.regrowth_time)) <= daysLeft):
-
+          
+          if (randomCrop.cost <= self.wallet and ((randomCrop.growth_time) + (n * randomCrop.regrowth_time)) < daysLeft):
             try:
               self.season.updateSeed(
                 randomCrop.name
@@ -62,8 +62,7 @@ class Candidate(object):
           else:
             return
         except:
-          if (randomCrop.cost <= self.wallet and (randomCrop.growth_time) <= daysLeft):
-
+          if (randomCrop.cost <= self.wallet and randomCrop.growth_time < daysLeft):
             try:
               self.season.updateSeed(
                 randomCrop.name
@@ -129,17 +128,19 @@ class Candidate(object):
 
         # Grow crop, and sell it if possible
         crop.grow()
-        if (crop.is_ready):
-          moneyFromHarvest = crop.harvest()
 
-          self.season.updateProfits(crop.name, moneyFromHarvest)
+        try:
+          if (crop.lived_time - crop.growth_time % crop.regrowth_time == 0):
+            moneyFromHarvest = crop.harvest()
+            self.season.updateProfits(crop.name, moneyFromHarvest)
+            self.wallet += moneyFromHarvest
+        except:
+          if (crop.lived_time >= crop.growth_time):
+            moneyFromHarvest = crop.harvest()
+            self.season.updateProfits(crop.name, moneyFromHarvest)
+            self.wallet += moneyFromHarvest
 
-          self.wallet += moneyFromHarvest
-
-          # Remove crop if it won't regrow
-          try:
-            crop.regrowth_time
-          except:
+            # Remove crop if it won't regrow
             self.full_crop.remove(crop)
 
       # Buy crops every day
@@ -156,7 +157,7 @@ class Population(object):
   def generate_new_candidate(self):
     new_candidates = []
     for candidate in self.candidates:
-      new_candidates.append(Candidate(init_crops=candidate.init_crops))
+      new_candidates.append(Candidate(init_crops=candidate.init_crops, favorite_crops=candidate.season.PROFITS_PER_SEASON))
     self.candidates = copy.deepcopy(new_candidates)
 
   def sort(self):

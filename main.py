@@ -90,6 +90,20 @@ class Candidate(object):
 
   def buySameCrops(self, init_crops):
     for crop in init_crops:
+      
+      try:
+        self.season.updateSeed(
+          crop.name
+        )
+      except:
+        self.season.setInitialSeed(
+          crop.name,
+          {
+            "seedsBought": 1,
+            "cost": crop.cost,
+          }
+        )
+
       self.full_crop.append(crop)
       self.wallet -= crop.cost
 

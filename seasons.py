@@ -2,17 +2,15 @@ from crops import *
 import copy
 
 SEASONS = ['SPRING', 'SUMMER', 'FALL']
-
-PROFITS_PER_SEASON = {
-    "SPRING": {},
-    "SUMMER": {},
-    "FALL": {},
-}
-
 class Season(object):
     def __init__(self, DAYS_TO_SIMULATE):
         self.SEASON = SEASONS[0]
         self.available_crops = []
+        self.PROFITS_PER_SEASON = {
+            "SPRING": {},
+            "SUMMER": {},
+            "FALL": {},
+        }
 
         self.DAYS_TO_SIMULATE = DAYS_TO_SIMULATE
         self.current_day = 0
@@ -47,7 +45,7 @@ class Season(object):
 
     def generateSeasonCrops(self):
         try:
-            sorted_profits = sorted(PROFITS_PER_SEASON[self.SEASON], key=lambda x:PROFITS_PER_SEASON[self.SEASON][x]['finalProfits'])
+            sorted_profits = sorted(self.PROFITS_PER_SEASON[self.SEASON], key=lambda x:self.PROFITS_PER_SEASON[self.SEASON][x]['finalProfits'])
         except:
             sorted_profits = []
 
@@ -76,26 +74,26 @@ class Season(object):
         return self.DAYS_TO_SIMULATE - self.current_day
     
     def setInitialSeed(self, cropName, info):
-        PROFITS_PER_SEASON[self.SEASON][cropName] = info
+        self.PROFITS_PER_SEASON[self.SEASON][cropName] = info
 
     def updateSeed(self, cropName):
-        PROFITS_PER_SEASON[self.SEASON][cropName]['seedsBought'] += 1
+        self.PROFITS_PER_SEASON[self.SEASON][cropName]['seedsBought'] += 1
 
     def updateProfits(self, cropName, total):
         try:
-            PROFITS_PER_SEASON[self.SEASON][cropName]
+            self.PROFITS_PER_SEASON[self.SEASON][cropName]
         except:
-            PROFITS_PER_SEASON[self.SEASON][cropName] = copy.deepcopy(PROFITS_PER_SEASON[SEASONS[SEASONS.index(self.SEASON) - 1]][cropName])
-            PROFITS_PER_SEASON[self.SEASON][cropName]['seedsBought'] = 0
+            self.PROFITS_PER_SEASON[self.SEASON][cropName] = copy.deepcopy(self.PROFITS_PER_SEASON[SEASONS[SEASONS.index(self.SEASON) - 1]][cropName])
+            self.PROFITS_PER_SEASON[self.SEASON][cropName]['seedsBought'] = 0
 
         try:
-            PROFITS_PER_SEASON[self.SEASON][cropName]['totalFromHarvest'] += total
+            self.PROFITS_PER_SEASON[self.SEASON][cropName]['totalFromHarvest'] += total
         except:
-            PROFITS_PER_SEASON[self.SEASON][cropName]['totalFromHarvest'] = total
+            self.PROFITS_PER_SEASON[self.SEASON][cropName]['totalFromHarvest'] = total
 
-        totalSpent = PROFITS_PER_SEASON[self.SEASON][cropName]['cost'] * PROFITS_PER_SEASON[self.SEASON][cropName]['seedsBought']
-        totalReceived = PROFITS_PER_SEASON[self.SEASON][cropName]['totalFromHarvest']
-        PROFITS_PER_SEASON[self.SEASON][cropName]['finalProfits'] = totalReceived - totalSpent
+        totalSpent = self.PROFITS_PER_SEASON[self.SEASON][cropName]['cost'] * self.PROFITS_PER_SEASON[self.SEASON][cropName]['seedsBought']
+        totalReceived = self.PROFITS_PER_SEASON[self.SEASON][cropName]['totalFromHarvest']
+        self.PROFITS_PER_SEASON[self.SEASON][cropName]['finalProfits'] = totalReceived - totalSpent
 
     def getProfits(self):
-        return PROFITS_PER_SEASON
+        return self.PROFITS_PER_SEASON

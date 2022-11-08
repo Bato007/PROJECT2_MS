@@ -3,7 +3,7 @@ from random import random, randint, sample
 import copy
 from seasons import *
 
-DAYS_TO_SIMULATE = 28
+DAYS_TO_SIMULATE = 28 * 3
 INITIAL_WALLET = 500
 
 def getArrivalTime(p, _lambda):
@@ -43,7 +43,7 @@ class Candidate(object):
           # If it's a regrowth crop, only buy it if it will generate an income during CURRENT season
           n = floor(randomCrop.profits[0] / randomCrop.cost)
           
-          if (randomCrop.cost <= self.wallet and ((randomCrop.growth_time) + (n * randomCrop.regrowth_time)) < daysLeft):
+          if (randomCrop.cost <= self.wallet and ((randomCrop.growth_time) + ((n + 1) * randomCrop.regrowth_time)) < daysLeft):
             try:
               self.season.updateSeed(
                 randomCrop.name

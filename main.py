@@ -1,17 +1,15 @@
-from math import floor, log
+from math import floor
 from random import random, randint, sample
 import copy
 from seasons import *
+import numpy as np
+import matplotlib.pyplot as plt
 
 DAYS_TO_SIMULATE = 28 * 3
 INITIAL_WALLET = 500
 
-def getArrivalTime(p, _lambda):
-  return - log(1 - p) / _lambda
-
-# Config variables
-_rain_lambda = 1
-next_rain_day = getArrivalTime(random(), _rain_lambda)
+def getBest(array):
+  return sorted(array, key=lambda x: x.wallet)[-1]
 
 class Candidate(object):
   def __init__(self, wallet = INITIAL_WALLET, init_crops = [], available_crops = [], favorite_crops=[]) -> None:
@@ -188,6 +186,7 @@ class Simulation(object):
   def simulate(self, pop_num=4, iterations=10, simulate_days=DAYS_TO_SIMULATE, select=0.5, mutate=0.1):
     population = Population()
     population.generate(pop_num)
+    self.best_candidates = []
 
     for i in range(iterations):
       print('# Iteration', i)
@@ -209,6 +208,7 @@ class Simulation(object):
       # Sort for better candidates
       population.sort()
       print('Best in gen', i, 'has wallet:', population.candidates[-1].wallet, '\n')
+      self.best_candidates.append(population.candidates[-1])
 
       # === FUNCION DE SELECCION ===
       population.candidates = population.candidates[int(pop_num*select):]
@@ -216,3 +216,25 @@ class Simulation(object):
 
 simulation = Simulation()
 simulation.simulate()
+
+x = []
+y = []
+for i, candidate in enumerate(simulation.best_candidates):
+  x.append(i + 1)
+  y.append(candidate.wallet)
+
+fig = plt.figure(figsize = (10, 5))
+# creating the bar plot
+plt.bar(x, y, color ='maroon', width = 0.4)
+plt.xlabel("Ages")
+plt.ylabel("Wallet")
+plt.title("Best candidates over the ages")
+plt.show()
+
+best_candidate = getBest(simulation.best_candidates)
+print('=> The best candidate bought the following crops')
+print('#'*40)
+for crop in best_candidate.init_crops:
+  print(crop)
+print('#'*40)
+print('=> At the end got', best_candidate.wallet)

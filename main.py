@@ -52,6 +52,7 @@ class Candidate(object):
                 {
                   "seedsBought": 1,
                   "cost": randomCrop.cost,
+                  "finalProfits": 0,
                 }
               )
 
@@ -71,6 +72,7 @@ class Candidate(object):
                 {
                   "seedsBought": 1,
                   "cost": randomCrop.cost,
+                  "finalProfits": 0,
                 }
               )
 
@@ -234,7 +236,15 @@ plt.show()
 best_candidate = getBest(simulation.best_candidates)
 print('=> The best candidate bought the following crops')
 print('#'*40)
-for crop in best_candidate.init_crops:
-  print(crop)
+
+for season in best_candidate.season.PROFITS_PER_SEASON:
+  current_dict = best_candidate.season.PROFITS_PER_SEASON[season]
+  sorted_profits = sorted(current_dict, key=lambda x:current_dict[x]['finalProfits'])[0:5]
+  print('\nTOP 5 MOST PROFITABLE SEEDS IN ', season, sorted_profits)
+  sorted_bought = sorted(current_dict, key=lambda x:current_dict[x]['seedsBought'])[0:5]
+  print('TOP 5 MOST BOUGHT SEEDS IN ', season, sorted_bought)
+  print('\n')
+
+
 print('#'*40)
 print('=> At the end got', best_candidate.wallet)

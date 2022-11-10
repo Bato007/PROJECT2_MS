@@ -1,4 +1,4 @@
-from math import floor
+from math import e as mathe, exp, floor, log
 from random import random, randint, sample
 import copy
 from seasons import *
@@ -10,6 +10,9 @@ INITIAL_WALLET = 500
 
 def getBest(array):
   return sorted(array, key=lambda x: x.wallet)[-1]
+
+def currentDistribution(day):
+  return exp((-0.5 * day) + log(10, mathe)) / 10
 
 class Candidate(object):
   def __init__(self, wallet = INITIAL_WALLET, init_crops = [], available_crops = [], favorite_crops=[]) -> None:
@@ -41,7 +44,7 @@ class Candidate(object):
           # If it's a regrowth crop, only buy it if it will generate an income during CURRENT season
           n = floor(randomCrop.profits[0] / randomCrop.cost)
           
-          if (randomCrop.cost <= self.wallet and ((randomCrop.growth_time) + ((n + 1) * randomCrop.regrowth_time)) < daysLeft):
+          if (randomCrop.cost <= self.wallet and ((randomCrop.growth_time) + ((n + 1) * randomCrop.regrowth_time)) < daysLeft and random() <= currentDistribution(self.season.current_day)):
             try:
               self.season.updateSeed(
                 randomCrop.name

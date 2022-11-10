@@ -12,7 +12,7 @@ def getBest(array):
   return sorted(array, key=lambda x: x.wallet)[-1]
 
 def currentDistribution(day):
-  return exp((-0.5 * day) + log(10, mathe)) / 10
+  return 10 * exp(-0.1 * day)
 
 class Candidate(object):
   def __init__(self, wallet = INITIAL_WALLET, init_crops = [], available_crops = [], favorite_crops=[]) -> None:

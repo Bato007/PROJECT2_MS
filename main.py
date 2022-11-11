@@ -44,7 +44,7 @@ class Candidate(object):
           # If it's a regrowth crop, only buy it if it will generate an income during CURRENT season
           n = floor(randomCrop.profits[0] / randomCrop.cost)
           
-          if (randomCrop.cost <= self.wallet and ((randomCrop.growth_time) + ((n + 1) * randomCrop.regrowth_time)) < daysLeft and random() <= currentDistribution(self.season.current_day)):
+          if (randomCrop.cost <= self.wallet and ((randomCrop.growth_time) + ((n + 1) * randomCrop.regrowth_time)) < daysLeft and random() <= currentDistribution(self.season.current_day % 28)):
             try:
               self.season.updateSeed(
                 randomCrop.name
